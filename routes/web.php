@@ -13,3 +13,4 @@ Route::get('/api/test', function () {
         'timestamp' => now(),
     ]);
 });
+Route::view('/login', 'login')->name('login');
