@@ -6,4 +6,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::view('/login', 'login')->name('login');
+Route::get('/api/test', function () {
+    return response()->json([
+        'status' => '1',
+        'message' => 'API working',
+        'timestamp' => now(),
+    ]);
+});
