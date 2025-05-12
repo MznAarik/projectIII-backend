@@ -4,11 +4,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
-    // return view('login');
-    // return $request->user();
+    return view('login');
 })->middleware('auth:sanctum');
 
 Route::get('/test', function () {
-    return response()->json(['message' => 'API is working!']);
+    return response()->json([
+        'status' => '1',
+        'message' => 'API is working',
+        'timestamp' => now(),
+    ]);
 });
-Route::view('/login', 'login')->name('login');
