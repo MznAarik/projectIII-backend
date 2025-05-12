@@ -9,8 +9,8 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/test', function () {
     return response()->json([
-        'status' => '1',
-        'message' => 'API is working',
+        'status' => 1,
+        'message' => 'Test API Working!',
         'timestamp' => now(),
     ]);
 });
