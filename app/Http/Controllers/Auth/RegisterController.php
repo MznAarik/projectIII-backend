@@ -8,6 +8,7 @@ use App\Mail\EmailVerification;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -81,13 +82,14 @@ class RegisterController extends Controller
                 'status' => 0,
                 'message' => 'Verification token has expired.',
             ], 400);
-        } else {
 
+        } else {
             $user->update([
                 'email_verifivation' => now(),
                 'email_verification_token' => null,
                 'is_verified' => true,
             ]);
+            Auth::login($user);
         }
     }
 }
