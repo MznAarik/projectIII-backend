@@ -85,11 +85,16 @@ class RegisterController extends Controller
 
         } else {
             $user->update([
-                'email_verifivation' => now(),
+                'email_verification' => now(),
                 'email_verification_token' => null,
                 'is_verified' => true,
             ]);
             Auth::login($user);
+
+            return response()->json([
+                'status' => 1,
+                'message' => 'Verification Sucessfull! Please login.'
+            ]);
         }
     }
 }
