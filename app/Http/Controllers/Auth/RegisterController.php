@@ -78,8 +78,13 @@ class RegisterController extends Controller
         if (!$user) {
             return response()->json([
                 'status' => 0,
+<<<<<<< HEAD
                 'message' => 'Invalid verification token.',
             ], 400);
+=======
+                'message' => 'No user found! Please signup again',
+            ], 404);
+>>>>>>> ba298730d8d5e47f9c5b93e075ea23c5dbb418aa
         }
 
         // Check if the token has expired
