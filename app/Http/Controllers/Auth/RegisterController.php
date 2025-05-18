@@ -10,10 +10,10 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class RegisterController extends Controller
 {
@@ -26,7 +26,7 @@ class RegisterController extends Controller
             $user = User::create([
                 'name' => $request['name'],
                 'email' => $request['email'],
-                'password' => $request['password'],
+                'password' => Hash::make($request['password']),
                 'gender' => $request['gender'],
                 'phoneno' => $request['phoneno'],
                 'address' => $request['address'],
@@ -76,7 +76,7 @@ class RegisterController extends Controller
         $check_expiration = $user->value('token_expires_at');
         // dd($check_expiration);
 
-        // lt less than gt greater than
+        // lt less than gt greater than for date comparision
         if ($check_expiration->lt(Carbon::now())) {
             return response()->json([
                 'status' => 0,
