@@ -10,10 +10,10 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class RegisterController extends Controller
 {
@@ -26,23 +26,22 @@ class RegisterController extends Controller
             $user = User::create([
                 'name' => $request['name'],
                 'email' => $request['email'],
-                'password' => $request['password'],
+                'password' => Hash::make($request['password']),
                 'gender' => $request['gender'],
                 'phoneno' => $request['phoneno'],
                 'address' => $request['address'],
                 'email_verification_token' => $token,
-                'token_expires_at' => now()->addHours(24),
+                'token_expires_at' => Carbon::now()->addHours(24),
             ]);
 
             $verificationUrl = url('/api/verify-email?token=' . $token);
 
-            $data = [
+            Mail::to($user->email)->send(new EmailVerification([
                 'name' => $user->name,
                 'email' => $user->email,
                 'verificationUrl' => $verificationUrl,
-            ];
+            ]));
 
-            Mail::to($user->email)->send(new EmailVerification($data));
             Log::info('Verification email sent to: ' . $user->email);
 
             DB::commit();
@@ -55,6 +54,7 @@ class RegisterController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Registration failed: ' . $e->getMessage());
+
             return response()->json([
                 'status' => 0,
                 'message' => 'Registration failed. Please try again.',
@@ -62,39 +62,32 @@ class RegisterController extends Controller
             ], 500);
         }
     }
-    public function verify_email(Request $request)
+
+    public function verifyEmail(Request $request)
     {
-
         $token = $request->query('token');
+
         if (!$token) {
-            return response()->json([
-                'status' => 0,
-                'message' => 'Verification failed. No token provided!',
-            ], 400);
+            return response()->json(['status' => 0, 'message' => 'Invalid verification token.'], 400);
         }
+
         $user = User::where('email_verification_token', $token)->first();
-        $check_expiration = $user->value('token_expires_at');
-        // dd($check_expiration);
 
-        // lt less than gt greater than
-        if ($check_expiration->lt(Carbon::now())) {
-            return response()->json([
-                'status' => 0,
-                'message' => 'Verification token has expired.',
-            ], 400);
-
-        } else {
-            $user->update([
-                'email_verification' => now(),
-                'email_verification_token' => null,
-                'is_verified' => true,
-            ]);
-            Auth::login($user);
-
-            return response()->json([
-                'status' => 1,
-                'message' => 'Verification Sucessfull! Please login.'
-            ]);
+        if (!$user) {
+            return response()->json(['status' => 0, 'message' => 'No user found! Please sign up again.'], 404);
         }
+
+        if (Carbon::now()->gt($user->token_expires_at)) {
+            return response()->json(['status' => 0, 'message' => 'Verification token has expired.'], 400);
+        }
+
+        $user->update([
+            'is_verified' => true,
+            'email_verified_at' => Carbon::now(),
+            'email_verification_token' => null,
+            'token_expires_at' => null
+        ]);
+
+        return response()->json(['status' => 1, 'message' => 'Your email has been successfully verified.']);
     }
 }
