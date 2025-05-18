@@ -73,6 +73,12 @@ class RegisterController extends Controller
             ], 400);
         }
         $user = User::where('email_verification_token', $token)->first();
+        if (!$user) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'No user found! Please signup again',
+            ]);
+        }
         $check_expiration = $user->value('token_expires_at');
         // dd($check_expiration);
 

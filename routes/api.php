@@ -35,4 +35,4 @@ Route::middleware('auth:sanctum')->get('/email/verify', function (Request $reque
 })->name('verification.status');
 
 Route::post('/register', [RegisterController::class, 'register'])->name('user.register');
-Route::get('/verify-email', [RegisterController::class, 'verify_email']);
+Route::post('/verify-email', [RegisterController::class, 'verify_email']);

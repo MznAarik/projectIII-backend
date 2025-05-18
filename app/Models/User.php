@@ -27,6 +27,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'email_verification_token',
     ];
 
     // app\Models\User.php
