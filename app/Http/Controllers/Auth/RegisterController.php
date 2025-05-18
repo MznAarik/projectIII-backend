@@ -84,6 +84,9 @@ class RegisterController extends Controller
 =======
                 'message' => 'No user found! Please signup again',
             ], 404);
+<<<<<<< HEAD
+>>>>>>> ba298730d8d5e47f9c5b93e075ea23c5dbb418aa
+=======
 >>>>>>> ba298730d8d5e47f9c5b93e075ea23c5dbb418aa
         }
 
