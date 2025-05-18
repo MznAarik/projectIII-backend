@@ -62,45 +62,44 @@ class RegisterController extends Controller
             ], 500);
         }
     }
-    public function verify_email(Request $request)
+    public function verifyEmail(Request $request)
     {
-
         $token = $request->query('token');
+
         if (!$token) {
             return response()->json([
                 'status' => 0,
-                'message' => 'Verification failed. No token provided!',
+                'message' => 'Invalid verification token.',
             ], 400);
         }
+
         $user = User::where('email_verification_token', $token)->first();
+
         if (!$user) {
             return response()->json([
                 'status' => 0,
-                'message' => 'No user found! Please signup again',
-            ]);
+                'message' => 'Invalid verification token.',
+            ], 400);
         }
-        $check_expiration = $user->value('token_expires_at');
-        // dd($check_expiration);
 
-        // lt less than gt greater than for date comparision
-        if ($check_expiration->lt(Carbon::now())) {
+        // Check if the token has expired
+        if (Carbon::now()->gt($user->token_expires_at)) {
             return response()->json([
                 'status' => 0,
                 'message' => 'Verification token has expired.',
             ], 400);
-
-        } else {
-            $user->update([
-                'email_verification' => now(),
-                'email_verification_token' => null,
-                'is_verified' => true,
-            ]);
-            Auth::login($user);
-
-            return response()->json([
-                'status' => 1,
-                'message' => 'Verification Sucessfull! Please login.'
-            ]);
         }
+
+        // Update user as verified
+        $user->is_verified = true;
+        $user->email_verified_at = now();
+        $user->email_verification_token = null;
+        $user->token_expires_at = null;
+        $user->save();
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Your email has been successfully verified.',
+        ]);
     }
 }
