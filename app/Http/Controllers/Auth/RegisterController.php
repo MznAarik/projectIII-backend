@@ -77,7 +77,7 @@ class RegisterController extends Controller
             return response()->json([
                 'status' => 0,
                 'message' => 'No user found! Please signup again',
-            ]);
+            ], 404);
         }
         $check_expiration = $user->value('token_expires_at');
         // dd($check_expiration);
