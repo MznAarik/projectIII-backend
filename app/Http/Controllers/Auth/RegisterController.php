@@ -31,17 +31,18 @@ class RegisterController extends Controller
                 'phoneno' => $request['phoneno'],
                 'address' => $request['address'],
                 'email_verification_token' => $token,
-                'token_expires_at' => Carbon::now()->addHours(24),
+                'token_expires_at' => now()->addHours(24),
             ]);
 
             $verificationUrl = url('/api/verify-email?token=' . $token);
 
-            Mail::to($user->email)->send(new EmailVerification([
+            $data = [
                 'name' => $user->name,
                 'email' => $user->email,
                 'verificationUrl' => $verificationUrl,
-            ]));
+            ];
 
+            Mail::to($user->email)->send(new EmailVerification($data));
             Log::info('Verification email sent to: ' . $user->email);
 
             DB::commit();
@@ -54,7 +55,6 @@ class RegisterController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Registration failed: ' . $e->getMessage());
-
             return response()->json([
                 'status' => 0,
                 'message' => 'Registration failed. Please try again.',
@@ -62,32 +62,42 @@ class RegisterController extends Controller
             ], 500);
         }
     }
-
     public function verifyEmail(Request $request)
     {
         $token = $request->query('token');
 
         if (!$token) {
-            return response()->json(['status' => 0, 'message' => 'Invalid verification token.'], 400);
+            return response()->json([
+                'status' => 0,
+                'message' => 'Invalid verification token.',
+            ], 400);
         }
 
         $user = User::where('email_verification_token', $token)->first();
 
         if (!$user) {
-            return response()->json(['status' => 0, 'message' => 'No user found! Please sign up again.'], 404);
+            return response()->json([
+                'status' => 0,
+                'message' => 'Invalid verification token.',
+            ], 400);
         }
 
         if (Carbon::now()->gt($user->token_expires_at)) {
-            return response()->json(['status' => 0, 'message' => 'Verification token has expired.'], 400);
+            return response()->json([
+                'status' => 0,
+                'message' => 'Verification token has expired.',
+            ], 400);
         }
 
-        $user->update([
-            'is_verified' => true,
-            'email_verified_at' => Carbon::now(),
-            'email_verification_token' => null,
-            'token_expires_at' => null
-        ]);
+        $user->is_verified = true;
+        $user->email_verified_at = now();
+        $user->email_verification_token = null;
+        $user->token_expires_at = null;
+        $user->save();
 
-        return response()->json(['status' => 1, 'message' => 'Your email has been successfully verified.']);
+        return response()->json([
+            'status' => 1,
+            'message' => 'Your email has been successfully verified.',
+        ]);
     }
 }
