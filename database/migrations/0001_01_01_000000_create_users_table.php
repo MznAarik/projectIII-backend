@@ -19,9 +19,7 @@ return new class extends Migration {
             $table->enum('gender', ['male', 'female', 'others'])->default('male');
             $table->bigInteger('phoneno')->nullable();
             $table->string('address', 50)->nullable();
-            $table->string('email_verification_token')->nullable();
-            $table->timestamp('token_expires_at')->nullable();
-            $table->boolean('is_verified')->default(false);
+            $table->rememberToken();
             $table->timestamps();
         });
 
