@@ -2,16 +2,22 @@
 
 namespace App\Models;
 
+use App\Notifications\CustomVerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Facades\URL;
-use App\Mail\EmailVerification;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail);
+    }
 
     protected $fillable = [
         'name',
@@ -20,20 +26,16 @@ class User extends Authenticatable
         'gender',
         'phoneno',
         'address',
-        'email_verification_token',
-        'token_expires_at',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
-        'email_verification_token',
     ];
 
     // app\Models\User.php
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'token_expires_at' => 'datetime',
     ];
 
 }
