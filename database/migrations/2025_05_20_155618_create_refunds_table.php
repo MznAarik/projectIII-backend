@@ -10,8 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('payments', function (Blueprint $table) {
+        Schema::create('refunds', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('payment_id');
+            $table->foreign('payment_id')
+                ->references('id')
+                ->on('payments')
+                ->onDelete('cascade');
 
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')
@@ -19,17 +24,12 @@ return new class extends Migration {
                 ->on('users')
                 ->onDelete('cascade');
 
-            $table->unsignedBigInteger('ticket_id');
-            $table->foreign('ticket_id')
-                ->references('id')
-                ->on('tickets')
-                ->onDelete('cascade');
-
-            $table->decimal('amount', 10, 2);
-            $table->string('payment_method', 50)->nullable();
+            $table->decimal('refund_amount', 10, 2);
+            $table->dateTime('refund_date');
+            $table->string('reason', 255)->nullable();
             $table->string('status', 50)->nullable()->default('Pending');
+            $table->string('refund_method', 50)->nullable();
             $table->string('transaction_id', 100)->nullable();
-            $table->dateTime('payment_date')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->boolean('delete_flag')->default(false);
@@ -42,6 +42,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('payments');
+        Schema::dropIfExists('refunds');
     }
 };
