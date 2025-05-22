@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('event_name', 50);
             $table->string('venue', 100);
             $table->integer('capacity');
-            $table->decimal('ticket_price', 10, 0)->notNull();
+            $table->decimal('ticket_price', 10, 0)->nullable(false);
             $table->text('description');
             $table->string('contact_info', 100)->nullable();
             $table->timestamp('start_date')->notNull();
