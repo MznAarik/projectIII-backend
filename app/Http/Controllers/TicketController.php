@@ -2,29 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserValidate;
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
-class UserController extends Controller
+class TicketController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('user.dashboard', ['message' => 'Welcome to the User Dashboard']);
-    }
+        $user = Auth::user();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        if (!$user || !$user->email_verified_at) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'Please verify your email before creating a ticket.',
+            ]);
+        }
     }
 
     /**
@@ -39,14 +34,6 @@ class UserController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
     {
         //
     }

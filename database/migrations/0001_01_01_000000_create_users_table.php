@@ -29,9 +29,6 @@ return new class extends Migration {
             $table->timestamps();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
-            $table->boolean('delete_flag')->default(false);
             $table->boolean('delete_flag')->default(false);
         });
 
