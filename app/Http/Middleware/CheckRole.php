@@ -11,17 +11,17 @@ class CheckRole
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next, $role): Response
     {
-        if (Auth::check()) {
-            return redirect()->route('login')->with('error', 'Please login to access this code');
+        // If the user is not authenticated
+        if (!Auth::check()) {
+            return redirect()->route('dashboard.admin')->with('error', 'Please login to access this page.');
         }
 
         $user = Auth::user();
 
+        // If the user's role does not match
         if ($user->role !== $role) {
             return redirect()->route('home')->with('error', 'Unauthorized access.');
         }
