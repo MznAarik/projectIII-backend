@@ -18,37 +18,48 @@ class AuthController extends Controller
         DB::beginTransaction();
 
         try {
+            $role = $request->role;
+
+            // Only allow admins to create admin accounts
+            if ($role === 'admin' && (!Auth::check() || Auth::user()->role !== 'admin')) {
+                return redirect()->route('login')->with([
+                    'status' => 0,
+                    'message' => 'Only admins can create admin accounts.',
+                    'error' => 'Unauthorized role assignment',
+                ]);
+            }
+
             $user = User::create([
-                'name' => $request['name'],
-                'email' => $request['email'],
-                'password' => Hash::make($request['password']),
-                'gender' => $request['gender'],
-                'phoneno' => $request['phoneno'],
-                'address' => $request['address'],
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'gender' => $request->gender,
+                'phoneno' => $request->phoneno,
+                'address' => $request->address,
+                'role' => $role,
             ]);
 
             event(new Registered($user));
-
             Log::info('Verification email sent to: ' . $user->email);
 
             DB::commit();
 
-            return response()->json([
+            return redirect()->route('login')->with([
                 'status' => 1,
                 'message' => 'Registration successful. Please verify your email.',
-                'user' => $user,
-            ], 201);
+            ]);
+
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Registration failed: ' . $e->getMessage());
-            return response()->json([
+
+            return redirect()->route('login')->with([
                 'status' => 0,
                 'message' => 'Registration failed. Please try again.',
                 'error' => $e->getMessage(),
-            ], 500);
+            ]);
         }
     }
-
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -59,21 +70,29 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             if (!$user->hasVerifiedEmail()) {
-                return response()->json(['message' => 'Please verify your email first.'], 403);
+                Auth::logout();
+                return redirect()->route('login')->with(['message' => 'Please verify your email first.']);
             }
-            $token = $user->createToken('auth_token')->plainTextToken;
-            return response()->json([
-                'user' => $user,
-                'token' => $token,
-            ]);
+
+            $request->session()->regenerate();
+
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard')->with('message', 'Welcome ' . $user->name . '!');
+            } elseif ($user->role === 'user') {
+                return redirect()->route('user.dashboard')->with('message', 'Welcome ' . $user->name . '!');
+            } else {
+                return redirect()->route('login.submit');
+            }
         }
 
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        return redirect()->route('login')->with(['message' => 'Invalid credentials']);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Logged out']);
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('login')->with('message', 'Logged out successfully');
     }
 }

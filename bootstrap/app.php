@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'authenticate_session' => \Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
             'encrypt_cookies' => \Illuminate\Cookie\Middleware\EncryptCookies::class,
             'validate_csrf_token' => \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
         ]);
 
         $middleware->group('web', [
@@ -32,6 +33,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->group('api', [
             \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            'throttle:api',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Illuminate\Routing\Middleware\ThrottleRequests::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
     })
