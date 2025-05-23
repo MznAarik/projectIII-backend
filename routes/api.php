@@ -1,22 +1,25 @@
 <?php
 
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\UserController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+// routes/api.php
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/user', function (Request $request) {
-//     return view('login');
-// })->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/admin/dashboard', function (Request $request) {
+        return response()->json([
+            'message' => 'Admin Dashboard',
+            'user' => $request->user(),
+        ]);
+    })->middleware('role:admin');
 
-Route::get('/test', function () {
-    return response()->json([
-        'status' => 1,
-        'message' => 'Test API Working!',
-        'timestamp' => now(),
-    ]);
+    Route::get('/user/dashboard', function (Request $request) {
+        return response()->json([
+            'message' => 'User Dashboard',
+            'user' => $request->user(),
+        ]);
+    })->middleware('role:user');
+
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
-
-Route::post('/register', [RegisterController::class, 'register'])->name('user.register');
-Route::get('/verify-email', [RegisterController::class, 'verifyEmail'])->name('verify.email');

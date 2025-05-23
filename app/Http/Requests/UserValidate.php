@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UserValidate extends FormRequest
 {
@@ -19,9 +20,12 @@ class UserValidate extends FormRequest
             'password' => 'required|string|min:6|max:25',
             'gender' => 'required|string',
             'phoneno' => 'required|digits:10',
+            'role' => 'required|in:user,admin'
         ];
+        if (Auth::check() && Auth::user()->role !== 'admin') {
+            $rules['role'] = 'in:user';
+        }
     }
-
     public function messages(): array
     {
         return [

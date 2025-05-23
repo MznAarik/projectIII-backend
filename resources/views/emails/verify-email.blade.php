@@ -1,3 +1,4 @@
+<!-- resources/views/emails/verify-email.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,7 +43,7 @@
             margin-bottom: 10px;
         }
 
-        .contents h3 {
+        .contents h4 {
             font-size: 16px;
             line-height: 1.5;
             margin-bottom: 20px;
@@ -53,13 +54,12 @@
         }
 
         .btn-link button {
-            background-color: #000;
+            background-color: #317d7d;
             color: #fff;
             font-weight: 600;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
         }
 
         .footer {
@@ -89,7 +89,7 @@
                 font-size: 20px;
             }
 
-            .contents h3 {
+            .contents h4 {
                 font-size: 14px;
             }
 
@@ -103,12 +103,12 @@
 
 <body>
     <div class="container">
-        <table align="center" border="0" cellpadding=" 0" cellspacing="0" width="100%" style="max-width: 600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
             <tr>
                 <td>
                     <div class="hero">
                         <div class="email-img">
-                            <img src="{{ $imageUrl }}" alt="Mail Image">
+                            <img src="{{ $data['imageUrl'] }}" alt="Mail Image">
                         </div>
                         <div class="contents">
                             <h2>Verify Your Email to Finish Signing Up!</h2>
@@ -116,8 +116,10 @@
                                 Thank you {{ $data['name'] }} for choosing us!<br>
                                 Please confirm that {{ $data['email'] }} is your email address<br>
                                 by clicking the button below or use this link:<br>
-                                <a href="{{ $data['verificationUrl'] }}"
-                                    style="color: #2323b6;">{{ $data['verificationUrl'] }}</a><br>
+                                <p style="font-size: smaller">
+                                    <a href="{{ $data['verificationUrl'] }}"
+                                        style="color: #2323b6;">{{ $data['verificationUrl'] }}</a>
+                                </p>
                                 within 24 hours.
                             </h4>
                         </div>
@@ -130,11 +132,9 @@
                         <div class="footer">
                             <p>© {{ date('Y') }} ETS. All rights reserved.</p>
                             <div class="social-icons">
-                                <div class="social-icons">
-                                    <a href="https://twitter.com" target="_blank">Twitter</a> |
-                                    <a href="https://facebook.com" target="_blank">Facebook</a> |
-                                    <a href="https://plus.google.com" target="_blank">Google+</a>
-                                </div>
+                                <a href="https://twitter.com" target="_blank">Twitter</a> |
+                                <a href="https://facebook.com" target="_blank">Facebook</a> |
+                                <a href="https://plus.google.com" target="_blank">Google+</a>
                             </div>
                             <p>Need help? <a href="mailto:mhrznaa.980@gmail.com" style="color: #0000EE;">Contact
                                     Support</a></p>

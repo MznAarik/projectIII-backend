@@ -12,17 +12,24 @@ return new class extends Migration {
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
+            $table->string('name');
+            $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('gender', ['male', 'female', 'others'])->default('male');
-            $table->bigInteger('phoneno')->nullable();
-            $table->string('address', 50)->nullable();
-            $table->string('email_verification_token')->nullable();
-            $table->timestamp('token_expires_at')->nullable();
-            $table->boolean('is_verified')->default(false);
+            $table->enum('gender', ['male', 'female', 'other'])->default('male');
+            $table->string('phoneno');
+            $table->string('address');
+            $table->unsignedBigInteger('district_id')->nullable();
+            $table->unsignedBigInteger('province_id')->nullable();
+            $table->date('date_of_birth')->nullable();
+            $table->index(['district_id', 'province_id']);
+            $table->string('role')->default('user');
+            $table->rememberToken();
             $table->timestamps();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->boolean('delete_flag')->default(false);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

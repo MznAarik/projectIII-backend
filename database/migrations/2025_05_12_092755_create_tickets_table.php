@@ -13,10 +13,10 @@ return new class extends Migration {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('customer_id');
-            $table->foreign('customer_id')
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')
                 ->references('id')
-                ->on('customers')
+                ->on('users')
                 ->onDelete('cascade');
 
             $table->unsignedBigInteger('event_id');
@@ -25,14 +25,15 @@ return new class extends Migration {
                 ->on('events')
                 ->onDelete('cascade');
 
-            $table->string('status', 10)->nullable();
-            $table->unsignedBigInteger('quantity')->nullable();
-            $table->decimal('total_price')->nullable();
+            $table->string('status', 20)->nullable()->default('Pending');
+            $table->unsignedBigInteger('quantity')->nullable()->default(1);
+            $table->decimal('total_price', 10, 2)->nullable();
             $table->dateTime('deadline')->nullable();
             $table->string('cancellation_reason', 255)->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->boolean('delete_flag')->default(false);
+            $table->string('qr_code', 255)->nullable(); // For QR code storage
             $table->timestamps();
         });
     }

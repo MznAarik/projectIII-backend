@@ -10,9 +10,11 @@ class CreateDistrictsTable extends Migration
     {
         Schema::create('districts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('province_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreignId('province_id')->constrained();
             $table->string('name');
-            $table->string('headquarters');
+            $table->string('headquarters')->nullable();
             $table->timestamps();
         });
     }

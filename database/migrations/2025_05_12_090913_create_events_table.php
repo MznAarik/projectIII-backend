@@ -12,16 +12,24 @@ return new class extends Migration {
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->string('event_name', 50)->nullable(false);
-            $table->string('venue', 100)->nullable(false);
-            $table->integer('capacity')->nullable(false);
-            $table->double('ticket_price')->nullable(false);
+            $table->string('event_name', 50);
+            $table->string('venue', 100);
+            $table->integer('capacity');
+            $table->decimal('ticket_price', 10, 0)->nullable(false);
             $table->text('description');
-            $table->string('category')->nullable(false);
-            $table->string('status', 20)->nullable(false);
+            $table->string('contact_info', 100)->nullable();
+            $table->timestamp('start_date')->notNull();
+            $table->timestamp('end_date')->nullable();
+            $table->string('category', 50);
+            $table->string('status', 50)->default('Active');
             $table->string('organizer', 100);
-            $table->string('image_url', 100);
+            $table->string('image_url', 255);
+            $table->integer('tickets_sold')->nullable()->default(0);
+            $table->string('currency', 10)->default('USD')->nullable();
             $table->timestamps();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->boolean('delete_flag')->default(false);
         });
     }
 
