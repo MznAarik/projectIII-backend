@@ -12,8 +12,8 @@
     <form action="{{ route('events.store') }}" method="POST">
         @csrf
         <div>
-            <label for="title">Event Title:</label>
-            <input type="text" id="title" name="title" required>
+            <label for="name">Event Title:</label>
+            <input type="text" id="name" name="name" required>
         </div>
         <div>
             <label for="date">Event Date:</label>
