@@ -17,23 +17,24 @@ return new class extends Migration {
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
-                ->onDelete('cascade');
+                ->onDelete('set null');
 
-            $table->unsignedBigInteger('event_id');
+            $table->unsignedBigInteger('event_id')->nullable();
             $table->foreign('event_id')
                 ->references('id')
                 ->on('events')
-                ->onDelete('cascade');
+                ->onDelete('set null');
 
-            $table->string('status', 20)->nullable()->default('Pending');
+            $table->string('status', 20)->nullable()->default('pending');
+            $table->decimal('price', 10, 2)->nullable();
             $table->unsignedBigInteger('quantity')->nullable()->default(1);
             $table->decimal('total_price', 10, 2)->nullable();
             $table->dateTime('deadline')->nullable();
             $table->string('cancellation_reason', 255)->nullable();
+            $table->string('qr_code', 255)->nullable(); // For QR code storage
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->boolean('delete_flag')->default(false);
-            $table->string('qr_code', 255)->nullable(); // For QR code storage
             $table->timestamps();
         });
     }
